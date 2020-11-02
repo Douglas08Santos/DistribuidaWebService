@@ -10,13 +10,21 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+//Identifica que é uma aplicação spring
 @SpringBootApplication
+//Procura as entidade na pasta passada como argumento
 @EntityScan(basePackages = {"ufrn.imd.distribuida.webservice.model"})
+//procura tudo para configurar
 @ComponentScan(basePackages = {"curso.*"})
+//Onde será persistido os dados
 @EnableJpaRepositories(basePackages = {"ufrn.imd.distribuida.webservice.repository"})
+//Recursos de transação
 @EnableTransactionManagement
+//MVC
 @EnableWebMvc
+//REST
 @RestController
+//Configura as anotações
 @EnableAutoConfiguration
 public class DistribuidaWebServiceApplication {
 

@@ -12,10 +12,10 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 //Identifica que é uma aplicação spring
 @SpringBootApplication
-//Procura as entidade na pasta passada como argumento
+//Procura as entidade na pasta passada como argumento, reponsavel por criar as tabelas no banco
 @EntityScan(basePackages = {"ufrn.imd.distribuida.webservice.model"})
 //procura tudo para configurar
-@ComponentScan(basePackages = {"curso.*"})
+@ComponentScan(basePackages = {"ufrn.*"})
 //Onde será persistido os dados
 @EnableJpaRepositories(basePackages = {"ufrn.imd.distribuida.webservice.repository"})
 //Recursos de transação
@@ -24,12 +24,13 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableWebMvc
 //REST
 @RestController
-//Configura as anotações
+//Configura as anotações+
 @EnableAutoConfiguration
 public class DistribuidaWebServiceApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(DistribuidaWebServiceApplication.class, args);
 	}
+	
 
 }

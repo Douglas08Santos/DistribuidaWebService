@@ -1,5 +1,6 @@
 package ufrn.imd.distribuida.webservice.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,8 +14,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import ufrn.imd.distribuida.webservice.model.ListaCompras;
 import ufrn.imd.distribuida.webservice.model.Produto;
 import ufrn.imd.distribuida.webservice.model.Supermercado;
 import ufrn.imd.distribuida.webservice.repository.ProdutoRepositorio;
@@ -32,45 +35,81 @@ public class ProdutoController {
     
   
     @PostMapping(value = "supermercado/{idSupermercado}/", produces = "application/json")
-	public void cadastrar(@PathVariable("idSupermercado") Integer idSupermercado, @RequestBody Produto produto){
+	public ResponseEntity<Produto> cadastrar(@PathVariable("idSupermercado") Integer idSupermercado, @RequestBody Produto produto){
 		long idSuper = (long) idSupermercado;
 		Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(idSuper);
 		produto.setSupermercado(supermercado.get());
     	
-    	//Produto produtoSalvo = produtoRepositorio.save(produto);
-    	produtoRepositorio.save(produto);
+    	Produto produtoSalvo = produtoRepositorio.save(produto);
+    	//produtoRepositorio.save(produto);
 		
-		//return new ResponseEntity<Produto>(produtoSalvo, HttpStatus.OK);
+		return new ResponseEntity<Produto>(produtoSalvo, HttpStatus.OK);
 	}
     
-    @PutMapping(value = "supermercado/produto/", produces = "application/json")
-    public void atualizar(@RequestBody Produto produto){
-    	//Produto produtoSalvo = produtoRepositorio.save(produto);
-    	produtoRepositorio.save(produto);
-		//return new ResponseEntity<Produto>(produtoSalvo, HttpStatus.OK);
+    @PutMapping(value = "supermercado/{id}/produto/", produces = "application/json")
+    public ResponseEntity<Produto> atualizar(@RequestBody Produto produto){
+    	Produto produtoSalvo = produtoRepositorio.save(produto);
+    	//produtoRepositorio.save(produto);
+		return new ResponseEntity<Produto>(produtoSalvo, HttpStatus.OK);
     }
     
-    @DeleteMapping(value = "supermercado/produto/{id}", produces = "application/json")
+    @DeleteMapping(value = "supermercado/{id}/produto/{id}", produces = "application/json")
     public void apagar(@PathVariable (value= "id") Long id){
     	//Optional<Produto> produto = produtoRepositorio.findById(id);
     	produtoRepositorio.deleteById(id);
     	
     	//return new ResponseEntity<Produto>(produto.get(), HttpStatus.OK);
     }
-	@GetMapping(value = "supermercado/produto/{id}", produces = "application/json")
-    public ResponseEntity<Produto> pesquisar(@PathVariable (value= "id") Long id){
+	@GetMapping(value = "supermercado/{idSupermercado}/produto/{idProduto}", produces = "application/json")
+    public ResponseEntity<Produto> pesquisar(@PathVariable(value = "idSupermercado") Integer idSupermercado, @PathVariable(value= "idProduto") Long idProduto){
     	
-    	Optional<Produto> produto = produtoRepositorio.findById(id);
+    	Optional<Produto> produto = produtoRepositorio.findById(idProduto);
     	
     	return new ResponseEntity<Produto>(produto.get(), HttpStatus.OK);
 
     }
+	//														  ?nome=<nome produto>
+	@GetMapping(value = "supermercado/{idSupermercado}/produto", produces = "application/json")
+    public ResponseEntity<List<Produto>> pesquisarPorNome(@PathVariable(value = "idSupermercado") Long idSupermercado, @RequestParam(value= "nome") String nome){
+    	
+		Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(idSupermercado);
+    	List<Produto> produtos = supermercado.get().getProduto();
+    	List<Produto> resultado = new ArrayList<Produto>();
+    	for (Produto p: produtos) {
+			if (p.getNome().equals(nome)) {
+				resultado.add(p);
+			}
+		}
+    	
+    
+    	return new ResponseEntity<List<Produto>>(resultado, HttpStatus.OK);
 
-	@GetMapping(value = "supermercado/produtos", produces = "application/json")
-    public ResponseEntity<List<Produto>> listar(){
+    }
+	
+	//	 
+	@GetMapping(value = "consulta/", produces = "application/json")
+	public ResponseEntity<List<Supermercado>> pesquisarPorLista(@RequestBody ListaCompras listaCompras){
+		
+		List<Supermercado> supermercados = (List<Supermercado>) SupermercadoRepositorio.findAll();
+		List<Supermercado> resultado = new ArrayList<Supermercado>();
+		for (Supermercado s: supermercados) {
+			for (Produto p: s.getProduto()) {
+				for(String i: listaCompras)
+				if (p.getNome().equals(i)) {
+					resultado.add(s);
+				}
+			}
+		}
+		
+		return new ResponseEntity<List<Supermercado>>(resultado, HttpStatus.OK);
+	
+	}
+	//Listar Produtos de um Supermercado
+	@GetMapping(value = "supermercado/{idSupermercado}/produtos", produces = "application/json")
+    public ResponseEntity<List<Produto>> listarProdutosSupermercado(@PathVariable(value = "idSupermercado") Long idSupermercado){
     	
-    	List<Produto> produtos = (List<Produto>)produtoRepositorio.findAll();
-    	
+    	Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(idSupermercado);
+    	List<Produto> produtos = supermercado.get().getProduto();
     	return new ResponseEntity<List<Produto>>(produtos, HttpStatus.OK);
 
     }

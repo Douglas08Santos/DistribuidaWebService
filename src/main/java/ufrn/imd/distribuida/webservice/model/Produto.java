@@ -10,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "produtos")
 public class Produto implements Serializable {
@@ -55,10 +57,11 @@ public class Produto implements Serializable {
 		this.qtd = qtd;
 	}
 	
-	
+	@JsonIgnore
 	public Supermercado getSupermercado() {
 		return supermercado;
 	}
+	
 	public void setSupermercado(Supermercado supermercado) {
 		this.supermercado = supermercado;
 	}

@@ -2,10 +2,12 @@ package ufrn.imd.distribuida.webservice.model;
 
 import java.io.Serializable;
 
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
-
+@Entity
 public class SupermercadoProduto implements Serializable {
 	
 	/**
@@ -13,12 +15,14 @@ public class SupermercadoProduto implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+	
 	/*Um supermercado tem varios produtos*/
-	@OneToMany
 	private Long idSupermercado;
 	
 	/*Varios produtos podem está em varios supermercados*/
-	@ManyToMany
 	private Long idProduto;
 	
 	private float preco;
@@ -26,10 +30,29 @@ public class SupermercadoProduto implements Serializable {
 	
 	public SupermercadoProduto() {}
 	
-	public SupermercadoProduto(float preco) {
-		super();
-		this.preco = preco;
-		
+	public Long getId() {
+		return id;
+	}
+
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Long getIdSupermercado() {
+		return idSupermercado;
+	}
+
+	public void setIdSupermercado(Long idSupermercado) {
+		this.idSupermercado = idSupermercado;
+	}
+
+	public Long getIdProduto() {
+		return idProduto;
+	}
+
+	public void setIdProduto(Long idProduto) {
+		this.idProduto = idProduto;
 	}
 
 	public float getPreco() {
@@ -39,6 +62,8 @@ public class SupermercadoProduto implements Serializable {
 	public void setPreco(float preco) {
 		this.preco = preco;
 	}
+
+
 
 	@Override
 	public int hashCode() {

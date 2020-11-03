@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 //Identifica que é uma aplicação spring
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "DistribuidaWebServiceApplication")
 //Procura as entidade na pasta passada como argumento, reponsavel por criar as tabelas no banco
 @EntityScan(basePackages = {"ufrn.imd.distribuida.webservice.model"})
 //procura tudo para configurar

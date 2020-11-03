@@ -26,7 +26,7 @@ public class SupermercadoController {
 	private SupermercadoRepositorio supermercadoRepositorio;
     
 	@GetMapping(value = "/{id}", produces = "application/json")
-    public ResponseEntity<Supermercado> getSupermercado(@PathVariable (value= "id") Long id){
+    public ResponseEntity<Supermercado> pesquisar(@PathVariable (value= "id") Long id){
     	
     	Optional<Supermercado> supermercado = supermercadoRepositorio.findById(id);
     	
@@ -35,7 +35,7 @@ public class SupermercadoController {
     }
 
 	@GetMapping(value = "/", produces = "application/json")
-    public ResponseEntity<List<Supermercado>> listarSupermercados(@PathVariable (value= "id") Long id){
+    public ResponseEntity<List<Supermercado>> listar(){
     	
     	List<Supermercado> supermercados = (List<Supermercado>)supermercadoRepositorio.findAll();
     	

@@ -23,10 +23,6 @@ public class Supermercado  implements Serializable {
 		
 	public Supermercado() {}
 	
-	public Supermercado(String nome) {
-		super();
-		this.nome = nome;
-	}
 	
 	public Long getId() {
 		return id;

@@ -3,11 +3,15 @@ package ufrn.imd.distribuida.webservice.model;
 import java.io.Serializable;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "produtos")
 public class Produto implements Serializable {
 
 	/**
@@ -16,41 +20,56 @@ public class Produto implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long id;
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	private Long idProduto;
 	private String nome;
+	private Double preco;
+	private int qtd;
 	
-	public Produto(){}
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Supermercado supermercado;
 	
-	public Produto(String nome) {
-		super();
-		this.nome = nome;
+	
+	public Long getIdProduto() {
+		return idProduto;
 	}
-
-	public Long getId() {
-		return id;
+	public void setIdProduto(Long idProduto) {
+		this.idProduto = idProduto;
 	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
 	public String getNome() {
 		return nome;
 	}
-
 	public void setNome(String nome) {
 		this.nome = nome;
 	}
-
+	public Double getPreco() {
+		return preco;
+	}
+	public void setPreco(Double preco) {
+		this.preco = preco;
+	}
+	public int getQtd() {
+		return qtd;
+	}
+	public void setQtd(int qtd) {
+		this.qtd = qtd;
+	}
+	
+	
+	public Supermercado getSupermercado() {
+		return supermercado;
+	}
+	public void setSupermercado(Supermercado supermercado) {
+		this.supermercado = supermercado;
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((idProduto == null) ? 0 : idProduto.hashCode());
 		return result;
 	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -60,11 +79,13 @@ public class Produto implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Produto other = (Produto) obj;
-		if (id == null) {
-			if (other.id != null)
+		if (idProduto == null) {
+			if (other.idProduto != null)
 				return false;
-		} else if (!id.equals(other.id))
+		} else if (!idProduto.equals(other.idProduto))
 			return false;
 		return true;
-	}	
+	}
+	
+	
 }

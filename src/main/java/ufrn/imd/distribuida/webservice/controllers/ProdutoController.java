@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+
 import ufrn.imd.distribuida.webservice.model.ListaCompras;
 import ufrn.imd.distribuida.webservice.model.Produto;
 import ufrn.imd.distribuida.webservice.model.Supermercado;
@@ -41,24 +42,24 @@ public class ProdutoController {
 		produto.setSupermercado(supermercado.get());
     	
     	Produto produtoSalvo = produtoRepositorio.save(produto);
-    	//produtoRepositorio.save(produto);
 		
 		return new ResponseEntity<Produto>(produtoSalvo, HttpStatus.OK);
 	}
     
-    @PutMapping(value = "supermercado/{id}/produto/", produces = "application/json")
-    public ResponseEntity<Produto> atualizar(@RequestBody Produto produto){
+    @PutMapping(value = "supermercado/{idSupermercado}/", produces = "application/json")
+    public ResponseEntity<Produto> atualizar(@PathVariable("idSupermercado") Integer idSupermercado, @RequestBody Produto produto){
+    	long idSuper = (long) idSupermercado;
+		Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(idSuper);
+		produto.setSupermercado(supermercado.get());
+    	
     	Produto produtoSalvo = produtoRepositorio.save(produto);
-    	//produtoRepositorio.save(produto);
+		
 		return new ResponseEntity<Produto>(produtoSalvo, HttpStatus.OK);
     }
     
     @DeleteMapping(value = "supermercado/{id}/produto/{id}", produces = "application/json")
     public void apagar(@PathVariable (value= "id") Long id){
-    	//Optional<Produto> produto = produtoRepositorio.findById(id);
     	produtoRepositorio.deleteById(id);
-    	
-    	//return new ResponseEntity<Produto>(produto.get(), HttpStatus.OK);
     }
 	@GetMapping(value = "supermercado/{idSupermercado}/produto/{idProduto}", produces = "application/json")
     public ResponseEntity<Produto> pesquisar(@PathVariable(value = "idSupermercado") Integer idSupermercado, @PathVariable(value= "idProduto") Long idProduto){
@@ -79,39 +80,48 @@ public class ProdutoController {
 			if (p.getNome().equals(nome)) {
 				resultado.add(p);
 			}
-		}
-    	
-    
+		}    
     	return new ResponseEntity<List<Produto>>(resultado, HttpStatus.OK);
 
     }
 	
 	//	 
 	@GetMapping(value = "consulta/", produces = "application/json")
-	public ResponseEntity<List<Supermercado>> pesquisarPorLista(@RequestBody ListaCompras listaCompras){
+	public ResponseEntity<List<Supermercado>> pesquisarMenorPreco(@RequestBody ListaCompras listaCompras){
 		
 		List<Supermercado> supermercados = (List<Supermercado>) SupermercadoRepositorio.findAll();
 		List<Supermercado> resultado = new ArrayList<Supermercado>();
-		for (Supermercado s: supermercados) {
-			for (Produto p: s.getProduto()) {
-				for(String i: listaCompras.getLista())
-				if (p.getNome().equals(i)){
-					if (resultado.contains(s) == false) {
+		Double menorPreco;
+		Produto produtoMenor = new Produto();
+		Supermercado supermercadomenorPreco = new Supermercado();
+		for(String i: listaCompras.getLista()) {
+			menorPreco = Double.MAX_VALUE;
+			for (Supermercado s: supermercados) {
+				for(Produto p: s.getProduto()) {
+					if(resultado.contains(s) == false && p.getNome().equals(i)){
 						Supermercado sup = new Supermercado();
 						sup.setIdSupermercado(s.getIdSupermercado());
 						sup.setNome(s.getNome());
-						sup.getProduto().add(p);
 						resultado.add(sup);
-					}else {
-						resultado.get(resultado.indexOf(s)).getProduto().add(p);
+						
+					}	
+					
+					if (p.getNome().equals(i) && p.getPreco() < menorPreco) {
+						menorPreco = p.getPreco();
+						produtoMenor = p;
+						supermercadomenorPreco = s;						
 					}					
-				}
+				}			
 			}
+			int index = resultado.indexOf(supermercadomenorPreco);
+			resultado.get(index).getProduto().add(produtoMenor);
+			
 		}
 		
 		return new ResponseEntity<List<Supermercado>>(resultado, HttpStatus.OK);
 	
 	}
+	
 	//Listar Produtos de um Supermercado
 	@GetMapping(value = "supermercado/{idSupermercado}/produtos", produces = "application/json")
     public ResponseEntity<List<Produto>> listarProdutosSupermercado(@PathVariable(value = "idSupermercado") Long idSupermercado){

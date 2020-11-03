@@ -94,9 +94,17 @@ public class ProdutoController {
 		List<Supermercado> resultado = new ArrayList<Supermercado>();
 		for (Supermercado s: supermercados) {
 			for (Produto p: s.getProduto()) {
-				for(String i: listaCompras)
-				if (p.getNome().equals(i)) {
-					resultado.add(s);
+				for(String i: listaCompras.getLista())
+				if (p.getNome().equals(i)){
+					if (resultado.contains(s) == false) {
+						Supermercado sup = new Supermercado();
+						sup.setIdSupermercado(s.getIdSupermercado());
+						sup.setNome(s.getNome());
+						sup.getProduto().add(p);
+						resultado.add(sup);
+					}else {
+						resultado.get(resultado.indexOf(s)).getProduto().add(p);
+					}					
 				}
 			}
 		}

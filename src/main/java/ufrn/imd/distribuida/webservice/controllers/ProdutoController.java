@@ -36,14 +36,14 @@ public class ProdutoController {
     
   
     @PostMapping(value = "supermercado/{idSupermercado}/", produces = "application/json")
-	public ResponseEntity<Produto> cadastrar(@PathVariable("idSupermercado") Integer idSupermercado, @RequestBody Produto produto){
+	public ResponseEntity<Supermercado> cadastrar(@PathVariable("idSupermercado") Integer idSupermercado, @RequestBody Produto produto){
 		long idSuper = (long) idSupermercado;
 		Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(idSuper);
-		produto.setSupermercado(supermercado.get());
-    	
+		produto.setSupermercado(supermercado.get());    	
     	Produto produtoSalvo = produtoRepositorio.save(produto);
+    	supermercado = SupermercadoRepositorio.findById(idSuper);
 		
-		return new ResponseEntity<Produto>(produtoSalvo, HttpStatus.OK);
+		return new ResponseEntity<Supermercado>(supermercado.get(), HttpStatus.OK);
 	}
     
     @PutMapping(value = "supermercado/{idSupermercado}/", produces = "application/json")

@@ -52,15 +52,30 @@ public class ProdutoController {
 		Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(idSuper);
 		produto.setSupermercado(supermercado.get());
     	
-    	Produto produtoSalvo = produtoRepositorio.save(produto);
-		
+    	Produto produtoSalvo = produtoRepositorio.save(produto);    	
 		return new ResponseEntity<Produto>(produtoSalvo, HttpStatus.OK);
     }
     
-    @DeleteMapping(value = "supermercado/{id}/produto/{id}", produces = "application/json")
-    public void apagar(@PathVariable (value= "id") Long id){
-    	produtoRepositorio.deleteById(id);
+    @DeleteMapping(value = "produto/{idProduto}", produces = "application/json")
+    public ResponseEntity<Void> apagar(@PathVariable(value= "idProduto") Long idProduto){
+    	
+    	produtoRepositorio.deleteById(idProduto); 
+    	
+    	return new ResponseEntity<Void>(HttpStatus.OK);
     }
+    
+    @DeleteMapping(value = "supermercado/{idSupermercado}/produto", produces = "application/json")
+    public void apagarPorNome(@PathVariable(value = "idSupermercado") Integer idSupermercado, @RequestParam(value= "nome") String nomeProduto){
+    	long idSuper = (long) idSupermercado;
+    	Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(idSuper);
+    	for(Produto p: supermercado.get().getProduto()) {
+    		if(p.getNome().equals(nomeProduto)) {
+    			supermercado.get().getProduto().remove(p);
+    		}
+    	}
+    }
+
+    
 	@GetMapping(value = "supermercado/{idSupermercado}/produto/{idProduto}", produces = "application/json")
     public ResponseEntity<Produto> pesquisar(@PathVariable(value = "idSupermercado") Integer idSupermercado, @PathVariable(value= "idProduto") Long idProduto){
     	
@@ -86,7 +101,7 @@ public class ProdutoController {
     }
 	
 	//	 
-	@GetMapping(value = "consulta/", produces = "application/json")
+	@PostMapping(value = "consulta/", produces = "application/json")
 	public ResponseEntity<List<Supermercado>> pesquisarMenorPreco(@RequestBody ListaCompras listaCompras){
 		
 		List<Supermercado> supermercados = (List<Supermercado>) SupermercadoRepositorio.findAll();

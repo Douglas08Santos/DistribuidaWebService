@@ -43,11 +43,10 @@ public class SupermercadoController {
     }
     
     @DeleteMapping(value = "/{idSupermercado}", produces = "application/json")
-    public ResponseEntity<Supermercado> apagar(@PathVariable (value= "idSupermercado") Long idSupermercado){
-    	Optional<Supermercado> supermercado = supermercadoRepositorio.findById(idSupermercado);
+    public ResponseEntity<Void> apagar(@PathVariable (value= "idSupermercado") Long idSupermercado){
     	supermercadoRepositorio.deleteById(idSupermercado);
     	
-    	return new ResponseEntity<Supermercado>(supermercado.get(), HttpStatus.OK);
+    	return new ResponseEntity<Void>(HttpStatus.OK);
     }
 	@GetMapping(value = "/{idSupermercado}", produces = "application/json")
     public ResponseEntity<Supermercado> pesquisar(@PathVariable (value= "idSupermercado") Long idSupermercado){
@@ -75,10 +74,5 @@ public class SupermercadoController {
     	return new ResponseEntity<List<Supermercado>>(supermercados, HttpStatus.OK);
 
     }
-
-	
-
-	
-
 }
  

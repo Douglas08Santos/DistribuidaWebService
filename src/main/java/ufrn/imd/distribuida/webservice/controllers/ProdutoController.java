@@ -35,32 +35,55 @@ public class ProdutoController {
 	private SupermercadoRepositorio SupermercadoRepositorio;
     
   
-    @PostMapping(value = "supermercado/{idSupermercado}/", produces = "application/json")
-	public ResponseEntity<Produto> cadastrar(@PathVariable("idSupermercado") Integer idSupermercado, @RequestBody Produto produto){
+    @PostMapping(value = "supermercado/{idSupermercado}", produces = "application/json")
+	public ResponseEntity<Supermercado> cadastrar(@PathVariable("idSupermercado") Integer idSupermercado, @RequestBody Produto produto){
 		long idSuper = (long) idSupermercado;
 		Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(idSuper);
-		produto.setSupermercado(supermercado.get());
+		produto.setSupermercado(supermercado.get()); 
     	
-    	Produto produtoSalvo = produtoRepositorio.save(produto);
-		
-		return new ResponseEntity<Produto>(produtoSalvo, HttpStatus.OK);
+    	produtoRepositorio.save(produto);
+    	supermercado = SupermercadoRepositorio.findById(idSuper);
+		return new ResponseEntity<Supermercado>(supermercado.get(), HttpStatus.OK);
 	}
     
-    @PutMapping(value = "supermercado/{idSupermercado}/", produces = "application/json")
-    public ResponseEntity<Produto> atualizar(@PathVariable("idSupermercado") Integer idSupermercado, @RequestBody Produto produto){
+    @PutMapping(value = "supermercado/{idSupermercado}", produces = "application/json")
+    public ResponseEntity<Supermercado> atualizar(@PathVariable("idSupermercado") Integer idSupermercado, @RequestBody Produto produto){
     	long idSuper = (long) idSupermercado;
 		Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(idSuper);
 		produto.setSupermercado(supermercado.get());
     	
-    	Produto produtoSalvo = produtoRepositorio.save(produto);
-		
-		return new ResponseEntity<Produto>(produtoSalvo, HttpStatus.OK);
+    	produtoRepositorio.save(produto);
+    	supermercado = SupermercadoRepositorio.findById(idSuper);
+		return new ResponseEntity<Supermercado>(supermercado.get(), HttpStatus.OK);
     }
     
-    @DeleteMapping(value = "supermercado/{id}/produto/{id}", produces = "application/json")
-    public void apagar(@PathVariable (value= "id") Long id){
-    	produtoRepositorio.deleteById(id);
+	@DeleteMapping(value = "supermercado/{idSupermercado}/produto/{idProduto}", produces = "application/json")
+    public void apagar(@PathVariable(value = "idSupermercado") Long idSupermercado, @PathVariable(value= "idProduto") Long idProduto){
+    	long idSuper = (long) idSupermercado;
+		Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(idSuper);
+    	
+    	for (Produto p: supermercado.get().getProduto()) {
+			if (p.getIdProduto() == idProduto) {
+				produtoRepositorio.deleteById(idProduto);
+			}
+		}    
+    	
+    	
     }
+    
+    @DeleteMapping(value = "supermercado/{id}/produto", produces = "application/json")
+    public void apagarPorNome(@PathVariable(value = "idSupermercado") Long idSupermercado, @RequestParam(value= "nome") String nome){
+    	Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(idSupermercado);
+    	List<Produto> produtos = supermercado.get().getProduto();
+    	for (Produto p: produtos) {
+			if (p.getNome().equals(nome)) {
+				produtoRepositorio.deleteById(p.getIdProduto());
+			}
+		}    
+    	
+    }
+    
+    
 	@GetMapping(value = "supermercado/{idSupermercado}/produto/{idProduto}", produces = "application/json")
     public ResponseEntity<Produto> pesquisar(@PathVariable(value = "idSupermercado") Integer idSupermercado, @PathVariable(value= "idProduto") Long idProduto){
     	
@@ -86,7 +109,7 @@ public class ProdutoController {
     }
 	
 	//	 
-	@GetMapping(value = "consulta/", produces = "application/json")
+	@GetMapping(value = "consulta", produces = "application/json")
 	public ResponseEntity<List<Supermercado>> pesquisarMenorPreco(@RequestBody ListaCompras listaCompras){
 		
 		List<Supermercado> supermercados = (List<Supermercado>) SupermercadoRepositorio.findAll();

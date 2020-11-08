@@ -22,11 +22,11 @@ public class Produto implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long idProduto;
 	private String nome;
 	private Double preco;
-	private int qtd;
+	
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Supermercado supermercado;
@@ -50,12 +50,8 @@ public class Produto implements Serializable {
 	public void setPreco(Double preco) {
 		this.preco = preco;
 	}
-	public int getQtd() {
-		return qtd;
-	}
-	public void setQtd(int qtd) {
-		this.qtd = qtd;
-	}
+	
+	
 	
 	@JsonIgnore
 	public Supermercado getSupermercado() {

@@ -28,14 +28,14 @@ public class SupermercadoController {
 	private SupermercadoRepositorio supermercadoRepositorio;
     
   
-    @PostMapping(value = "/", produces = "application/json")
+    @PostMapping(value = "", produces = "application/json")
 	public ResponseEntity<Supermercado> cadastrar(@RequestBody Supermercado supermercado){
 		Supermercado supermercadoSalvo = supermercadoRepositorio.save(supermercado);
 		
 		return new ResponseEntity<Supermercado>(supermercadoSalvo, HttpStatus.OK);
 	}
     
-    @PutMapping(value = "/", produces = "application/json")
+    @PutMapping(value = "", produces = "application/json")
     public ResponseEntity<Supermercado> atualizar(@RequestBody Supermercado supermercado){
     	Supermercado supermercadoSalvo = supermercadoRepositorio.save(supermercado);
 		
@@ -43,12 +43,18 @@ public class SupermercadoController {
     }
     
     @DeleteMapping(value = "/{idSupermercado}", produces = "application/json")
-    public ResponseEntity<Supermercado> apagar(@PathVariable (value= "idSupermercado") Long idSupermercado){
-    	Optional<Supermercado> supermercado = supermercadoRepositorio.findById(idSupermercado);
-    	supermercadoRepositorio.deleteById(idSupermercado);
+    public ResponseEntity<String> apagar(@PathVariable (value= "idSupermercado") Long idSupermercado){
     	
-    	return new ResponseEntity<Supermercado>(supermercado.get(), HttpStatus.OK);
+    	try {
+    		supermercadoRepositorio.deleteById(idSupermercado);
+		} catch (Exception e) {
+			return new ResponseEntity<String>("Supermercado possui produtos. Não pode ser deletado",HttpStatus.BAD_REQUEST);		 	
+		}
+    	
+    	return new ResponseEntity<String>("",HttpStatus.OK);    	
+    	
     }
+    
 	@GetMapping(value = "/{idSupermercado}", produces = "application/json")
     public ResponseEntity<Supermercado> pesquisar(@PathVariable (value= "idSupermercado") Long idSupermercado){
     	
@@ -57,17 +63,8 @@ public class SupermercadoController {
     	return new ResponseEntity<Supermercado>(supermercado.get(), HttpStatus.OK);
 
     }
-	
-	@GetMapping(value = "/?nome={nome}", produces = "application/json")
-    public ResponseEntity<Supermercado> pesquisarPorNome(@PathVariable (value= "nome") String nome){
-    	
-    	Supermercado supermercado = supermercadoRepositorio.findByNome(nome);
-    
-    	return new ResponseEntity<Supermercado>(supermercado, HttpStatus.OK);
 
-    }
-
-	@GetMapping(value = "/", produces = "application/json")
+	@GetMapping(value = "", produces = "application/json")
     public ResponseEntity<List<Supermercado>> listar(){
     	
     	List<Supermercado> supermercados = (List<Supermercado>)supermercadoRepositorio.findAll();

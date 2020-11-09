@@ -51,14 +51,13 @@ public class ProdutoController {
     	long idSuper = (long) idSupermercado;
 		Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(idSuper);
 		produto.setSupermercado(supermercado.get());
-    	
     	produtoRepositorio.save(produto);
     	supermercado = SupermercadoRepositorio.findById(idSuper);
 		return new ResponseEntity<Supermercado>(supermercado.get(), HttpStatus.OK);
     }
     
 	@DeleteMapping(value = "supermercado/{idSupermercado}/produto/{idProduto}", produces = "application/json")
-    public void apagar(@PathVariable(value = "idSupermercado") Long idSupermercado, @PathVariable(value= "idProduto") Long idProduto){
+    public void apagarPorId(@PathVariable(value = "idSupermercado") Long idSupermercado, @PathVariable(value= "idProduto") Long idProduto){
     	long idSuper = (long) idSupermercado;
 		Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(idSuper);
     	
@@ -84,12 +83,14 @@ public class ProdutoController {
     }
     
     
-	@GetMapping(value = "supermercado/{idSupermercado}/produto/{idProduto}", produces = "application/json")
-    public ResponseEntity<Produto> pesquisar(@PathVariable(value = "idSupermercado") Integer idSupermercado, @PathVariable(value= "idProduto") Long idProduto){
+	@GetMapping(value = "produto/{idProduto}", produces = "application/json")
+    public ResponseEntity<Supermercado> pesquisarPorId(@PathVariable(value= "idProduto") Long idProduto){
     	
     	Optional<Produto> produto = produtoRepositorio.findById(idProduto);
+    	Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(produto.get().getSupermercado().getIdSupermercado());
     	
-    	return new ResponseEntity<Produto>(produto.get(), HttpStatus.OK);
+    	
+    	return new ResponseEntity<Supermercado>(supermercado.get(), HttpStatus.OK);
 
     }
 	//														  ?nome=<nome produto>
@@ -97,14 +98,17 @@ public class ProdutoController {
     public ResponseEntity<List<Produto>> pesquisarPorNome(@PathVariable(value = "idSupermercado") Long idSupermercado, @RequestParam(value= "nome") String nome){
     	
 		Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(idSupermercado);
-    	List<Produto> produtos = supermercado.get().getProduto();
+    	List<Produto> produtos = supermercado.get().getProduto(); 
     	List<Produto> resultado = new ArrayList<Produto>();
     	for (Produto p: produtos) {
 			if (p.getNome().equals(nome)) {
 				resultado.add(p);
+				return new ResponseEntity<List<Produto>>(resultado, HttpStatus.OK);
 			}
-		}    
-    	return new ResponseEntity<List<Produto>>(resultado, HttpStatus.OK);
+		}
+    	
+    	return new ResponseEntity<List<Produto>>(resultado, HttpStatus.NOT_FOUND);
+    	
 
     }
 	

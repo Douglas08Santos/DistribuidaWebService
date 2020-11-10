@@ -1,5 +1,6 @@
 package ufrn.imd.distribuida.webservice.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,18 +34,26 @@ public class SupermercadoController {
 	private SupermercadoRepositorio supermercadoRepositorio;
     
   
-    @PostMapping(value = "", produces = "application/json")
+    @PostMapping(value = "/", produces = "application/json")
 	public ResponseEntity<Supermercado> cadastrar(@RequestBody Supermercado supermercado){
-		Supermercado supermercadoSalvo = supermercadoRepositorio.save(supermercado);
-		
-		return new ResponseEntity<Supermercado>(supermercadoSalvo, HttpStatus.OK);
+		try {
+			Supermercado supermercadoSalvo = supermercadoRepositorio.save(supermercado);
+			return new ResponseEntity<Supermercado>(supermercadoSalvo, HttpStatus.CREATED);
+		} catch (Exception e) {
+			Supermercado supermercadoSalvo = new Supermercado();
+			return new ResponseEntity<Supermercado>(supermercadoSalvo, HttpStatus.NO_CONTENT);
+		} 		
 	}
     
-    @PutMapping(value = "", produces = "application/json")
+    @PutMapping(value = "/", produces = "application/json")
     public ResponseEntity<Supermercado> atualizar(@RequestBody Supermercado supermercado){
-    	Supermercado supermercadoSalvo = supermercadoRepositorio.save(supermercado);
-		
-		return new ResponseEntity<Supermercado>(supermercadoSalvo, HttpStatus.OK);
+    	try {
+			Supermercado supermercadoSalvo = supermercadoRepositorio.save(supermercado);
+			return new ResponseEntity<Supermercado>(supermercadoSalvo, HttpStatus.OK);
+		} catch (Exception e) {
+			Supermercado supermercadoSalvo = new Supermercado();
+			return new ResponseEntity<Supermercado>(supermercadoSalvo, HttpStatus.NO_CONTENT);
+		} 		
     }
     
     @DeleteMapping(value = "/{idSupermercado}", produces = "application/json")
@@ -53,28 +62,35 @@ public class SupermercadoController {
     	try {
     		supermercadoRepositorio.deleteById(idSupermercado);
 		} catch (Exception e) {
-			return new ResponseEntity<String>("Supermercado possui produtos ou não existe.",HttpStatus.BAD_REQUEST);		 	
+			return new ResponseEntity<String>("Supermercado possui produtos ou não existe.",HttpStatus.NO_CONTENT);		 	
 		}
     	
-    	return new ResponseEntity<String>("",HttpStatus.OK);    	
+    	return new ResponseEntity<String>("",HttpStatus.ACCEPTED);    	
     	
     }
     
 	@GetMapping(value = "/{idSupermercado}", produces = "application/json")
     public ResponseEntity<Supermercado> pesquisar(@PathVariable (value= "idSupermercado") Long idSupermercado){
-    	
-    	Optional<Supermercado> supermercado = supermercadoRepositorio.findById(idSupermercado);
-    	
-    	return new ResponseEntity<Supermercado>(supermercado.get(), HttpStatus.OK);
-
+		
+		try {
+			Optional<Supermercado> supermercado = supermercadoRepositorio.findById(idSupermercado);
+			return new ResponseEntity<Supermercado>(supermercado.get(), HttpStatus.FOUND);
+		} catch (Exception e) {			
+			Supermercado supermercado = new Supermercado();
+			return new ResponseEntity<Supermercado>(supermercado, HttpStatus.NOT_FOUND);
+		}
     }
 
 	@GetMapping(value = "", produces = "application/json")
     public ResponseEntity<List<Supermercado>> listar(){
+    	try {
+    		List<Supermercado> supermercados = (List<Supermercado>)supermercadoRepositorio.findAll();        	
+        	return new ResponseEntity<List<Supermercado>>(supermercados, HttpStatus.OK);
+		} catch (Exception e) {
+			List<Supermercado> supermercados = new ArrayList<Supermercado>();        	
+        	return new ResponseEntity<List<Supermercado>>(supermercados, HttpStatus.NOT_FOUND);
+		}
     	
-    	List<Supermercado> supermercados = (List<Supermercado>)supermercadoRepositorio.findAll();
-    	
-    	return new ResponseEntity<List<Supermercado>>(supermercados, HttpStatus.OK);
 
     }
 

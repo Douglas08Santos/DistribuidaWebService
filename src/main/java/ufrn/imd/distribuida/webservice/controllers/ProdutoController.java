@@ -41,78 +41,113 @@ public class ProdutoController {
     
   
     @PostMapping(value = "supermercado/{idSupermercado}", produces = "application/json")
-	public ResponseEntity<Supermercado> cadastrar(@PathVariable("idSupermercado") Integer idSupermercado, @RequestBody Produto produto){
-		long idSuper = (long) idSupermercado;
-		Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(idSuper);
-		produto.setSupermercado(supermercado.get()); 
-    	
-    	produtoRepositorio.save(produto);
-    	supermercado = SupermercadoRepositorio.findById(idSuper);
-		return new ResponseEntity<Supermercado>(supermercado.get(), HttpStatus.OK);
+	public ResponseEntity<Supermercado> cadastrar(@PathVariable("idSupermercado") Integer idSupermercado, 
+			@RequestBody Produto produto){
+		try {
+			long idSuper = (long) idSupermercado;
+			Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(idSuper);
+			produto.setSupermercado(supermercado.get()); 
+	    	
+	    	produtoRepositorio.save(produto);
+	    	supermercado = SupermercadoRepositorio.findById(idSuper);
+			return new ResponseEntity<Supermercado>(supermercado.get(), HttpStatus.CREATED);
+		} catch (Exception e) {
+			long idSuper = (long) idSupermercado;
+			Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(idSuper);
+			return new ResponseEntity<Supermercado>(supermercado.get(), HttpStatus.NOT_MODIFIED);
+		}
 	}
     
     @PutMapping(value = "supermercado/{idSupermercado}", produces = "application/json")
     public ResponseEntity<Supermercado> atualizar(@PathVariable("idSupermercado") Integer idSupermercado, @RequestBody Produto produto){
-    	long idSuper = (long) idSupermercado;
-		Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(idSuper);
-		produto.setSupermercado(supermercado.get());
-    	produtoRepositorio.save(produto);
-    	supermercado = SupermercadoRepositorio.findById(idSuper);
-		return new ResponseEntity<Supermercado>(supermercado.get(), HttpStatus.OK);
+    	try {
+			long idSuper = (long) idSupermercado;
+			Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(idSuper);
+			produto.setSupermercado(supermercado.get()); 
+	    	
+	    	produtoRepositorio.save(produto);
+	    	supermercado = SupermercadoRepositorio.findById(idSuper);
+			return new ResponseEntity<Supermercado>(supermercado.get(), HttpStatus.OK);
+		} catch (Exception e) {
+			long idSuper = (long) idSupermercado;
+			Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(idSuper);
+			return new ResponseEntity<Supermercado>(supermercado.get(), HttpStatus.NOT_MODIFIED);
+		}
     }
     
 	@DeleteMapping(value = "supermercado/{idSupermercado}/produto/{idProduto}", produces = "application/json")
-    public void apagarPorId(@PathVariable(value = "idSupermercado") Long idSupermercado, @PathVariable(value= "idProduto") Long idProduto){
-    	Long idSuper = (long) idSupermercado;
-		Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(idSuper);
-    	
-    	for (Produto p: supermercado.get().getProduto()) {
-			if (p.getIdProduto() == idProduto) {
-				produtoRepositorio.deleteById(idProduto);
-			}
-		}    
+    public ResponseEntity<String> apagarPorId(@PathVariable(value = "idSupermercado") Long idSupermercado, @PathVariable(value= "idProduto") Long idProduto){
+    	try {
+    		Long idSuper = (long) idSupermercado;
+    		Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(idSuper);
+        	
+        	for (Produto p: supermercado.get().getProduto()) {
+    			if (p.getIdProduto() == idProduto) {
+    				produtoRepositorio.deleteById(idProduto);
+    			}
+    		}    
+        	return new ResponseEntity<String>("", HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<String>("", HttpStatus.NOT_FOUND);
+		}
+		
     	
     	
     }
     //															?nome=produtoNome
     @DeleteMapping(value = "supermercado/{idSupermercado}/produto", produces = "application/json")
-    public void apagarPorNome(@PathVariable(value = "idSupermercado") Long idSupermercado, @RequestParam(value= "nome") String nome){
-    	Optional<Supermercado> supermercado = SupermercadoRepositorio.findById((Long)idSupermercado);
-    	List<Produto> produtos = supermercado.get().getProduto();
-    	for (Produto p: produtos) {
-			if (p.getNome().equals(nome)) {
-				produtoRepositorio.deleteById(p.getIdProduto());
-			}
-		}    
-    	
+    public ResponseEntity<String> apagarPorNome(@PathVariable(value = "idSupermercado") Long idSupermercado, @RequestParam(value= "nome") String nome){
+    	try {
+    		Optional<Supermercado> supermercado = SupermercadoRepositorio.findById((Long)idSupermercado);
+        	List<Produto> produtos = supermercado.get().getProduto();
+        	for (Produto p: produtos) {
+    			if (p.getNome().equals(nome)) {
+    				produtoRepositorio.deleteById(p.getIdProduto());
+    			}
+    		}   
+        	return new ResponseEntity<String>("", HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<String>("", HttpStatus.NOT_FOUND);
+		}    	
     }
     
     
 	@GetMapping(value = "produto/{idProduto}", produces = "application/json")
     public ResponseEntity<Supermercado> pesquisarPorId(@PathVariable(value= "idProduto") Long idProduto){
+    	try {
+    		Optional<Produto> produto = produtoRepositorio.findById(idProduto);
+        	Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(produto.get().getSupermercado().getIdSupermercado());
+        	return new ResponseEntity<Supermercado>(supermercado.get(), HttpStatus.FOUND);
+		} catch (Exception e) {
+			Supermercado supermercado = new Supermercado();
+			return new ResponseEntity<Supermercado>(supermercado, HttpStatus.NOT_FOUND);
+		}
     	
-    	Optional<Produto> produto = produtoRepositorio.findById(idProduto);
-    	Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(produto.get().getSupermercado().getIdSupermercado());
     	
     	
-    	return new ResponseEntity<Supermercado>(supermercado.get(), HttpStatus.OK);
+    	
 
     }
 	//														  ?nome=<nome produto>
 	@GetMapping(value = "supermercado/{idSupermercado}/produto", produces = "application/json")
     public ResponseEntity<List<Produto>> pesquisarPorNome(@PathVariable(value = "idSupermercado") Long idSupermercado, @RequestParam(value= "nome") String nome){
-    	
-		Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(idSupermercado);
-    	List<Produto> produtos = supermercado.get().getProduto(); 
-    	List<Produto> resultado = new ArrayList<Produto>();
-    	for (Produto p: produtos) {
-			if (p.getNome().equals(nome)) {
-				resultado.add(p);
-				return new ResponseEntity<List<Produto>>(resultado, HttpStatus.OK);
-			}
+    	try {
+    		Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(idSupermercado);
+        	List<Produto> produtos = supermercado.get().getProduto(); 
+        	List<Produto> resultado = new ArrayList<Produto>();
+        	for (Produto p: produtos) {
+    			if (p.getNome().equals(nome)) {
+    				resultado.add(p);    				
+    			}
+    		}
+        	return new ResponseEntity<List<Produto>>(resultado, HttpStatus.FOUND);
+		} catch (Exception e) {
+			List<Produto> resultado = new ArrayList<Produto>();
+			return new ResponseEntity<List<Produto>>(resultado, HttpStatus.NOT_FOUND);
 		}
+		
     	
-    	return new ResponseEntity<List<Produto>>(resultado, HttpStatus.NOT_FOUND);
+    	
     	
 
     }
@@ -150,17 +185,22 @@ public class ProdutoController {
 			
 		}
 		
-		return new ResponseEntity<List<Supermercado>>(resultado, HttpStatus.OK);
+		return new ResponseEntity<List<Supermercado>>(resultado, HttpStatus.FOUND);
 	
 	}
 	
 	//Listar Produtos de um Supermercado
 	@GetMapping(value = "supermercado/{idSupermercado}/produtos", produces = "application/json")
     public ResponseEntity<List<Produto>> listarProdutosSupermercado(@PathVariable(value = "idSupermercado") Long idSupermercado){
+    	try {
+    		Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(idSupermercado);
+        	List<Produto> produtos = supermercado.get().getProduto();
+        	return new ResponseEntity<List<Produto>>(produtos, HttpStatus.OK);
+		} catch (Exception e) {
+			List<Produto> produtos = new ArrayList<Produto>();
+        	return new ResponseEntity<List<Produto>>(produtos, HttpStatus.NOT_FOUND);
+		}
     	
-    	Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(idSupermercado);
-    	List<Produto> produtos = supermercado.get().getProduto();
-    	return new ResponseEntity<List<Produto>>(produtos, HttpStatus.OK);
 
     }
 

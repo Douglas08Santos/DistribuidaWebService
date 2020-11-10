@@ -93,7 +93,7 @@ public class ProdutoController {
 		
     	
     	
-    }
+    } 
     //															?nome=produtoNome
     @DeleteMapping(value = "supermercado/{idSupermercado}/produto", produces = "application/json")
     public ResponseEntity<String> apagarPorNome(@PathVariable(value = "idSupermercado") Long idSupermercado, @RequestParam(value= "nome") String nome){

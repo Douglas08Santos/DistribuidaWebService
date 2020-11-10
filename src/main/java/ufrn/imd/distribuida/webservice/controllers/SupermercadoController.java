@@ -67,7 +67,7 @@ public class SupermercadoController {
     	
     	return new ResponseEntity<String>("",HttpStatus.ACCEPTED);    	
     	
-    }
+    } 
     
 	@GetMapping(value = "/{idSupermercado}", produces = "application/json")
     public ResponseEntity<Supermercado> pesquisar(@PathVariable (value= "idSupermercado") Long idSupermercado){

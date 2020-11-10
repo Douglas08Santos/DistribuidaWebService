@@ -19,7 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 import ufrn.imd.distribuida.webservice.model.Supermercado;
 import ufrn.imd.distribuida.webservice.repository.SupermercadoRepositorio;
 
-
+/*
+ * @GetMapping - Pedido para recuperar dados
+ * @PostMapping - Envia dados para processar
+ * @PutMapping - Envia dados para atualizar
+ * @DeleteMapping - Deleta o registro   
+ */
 @RestController
 @RequestMapping(value="/supermercado")
 public class SupermercadoController {
@@ -48,7 +53,7 @@ public class SupermercadoController {
     	try {
     		supermercadoRepositorio.deleteById(idSupermercado);
 		} catch (Exception e) {
-			return new ResponseEntity<String>("Supermercado possui produtos. Não pode ser deletado",HttpStatus.BAD_REQUEST);		 	
+			return new ResponseEntity<String>("Supermercado possui produtos ou não existe.",HttpStatus.BAD_REQUEST);		 	
 		}
     	
     	return new ResponseEntity<String>("",HttpStatus.OK);    	

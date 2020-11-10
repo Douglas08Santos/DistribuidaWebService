@@ -24,7 +24,12 @@ import ufrn.imd.distribuida.webservice.model.Supermercado;
 import ufrn.imd.distribuida.webservice.repository.ProdutoRepositorio;
 import ufrn.imd.distribuida.webservice.repository.SupermercadoRepositorio;
 
-
+/*
+ * @GetMapping - Pedido para recuperar dados
+ * @PostMapping - Envia dados para processar
+ * @PutMapping - Envia dados para atualizar
+ * @DeleteMapping - Deleta o registro   
+ */
 @RestController
 @RequestMapping(value="/")
 public class ProdutoController {
@@ -58,7 +63,7 @@ public class ProdutoController {
     
 	@DeleteMapping(value = "supermercado/{idSupermercado}/produto/{idProduto}", produces = "application/json")
     public void apagarPorId(@PathVariable(value = "idSupermercado") Long idSupermercado, @PathVariable(value= "idProduto") Long idProduto){
-    	long idSuper = (long) idSupermercado;
+    	Long idSuper = (long) idSupermercado;
 		Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(idSuper);
     	
     	for (Produto p: supermercado.get().getProduto()) {
@@ -69,10 +74,10 @@ public class ProdutoController {
     	
     	
     }
-    
-    @DeleteMapping(value = "supermercado/{id}/produto", produces = "application/json")
+    //															?nome=produtoNome
+    @DeleteMapping(value = "supermercado/{idSupermercado}/produto", produces = "application/json")
     public void apagarPorNome(@PathVariable(value = "idSupermercado") Long idSupermercado, @RequestParam(value= "nome") String nome){
-    	Optional<Supermercado> supermercado = SupermercadoRepositorio.findById(idSupermercado);
+    	Optional<Supermercado> supermercado = SupermercadoRepositorio.findById((Long)idSupermercado);
     	List<Produto> produtos = supermercado.get().getProduto();
     	for (Produto p: produtos) {
 			if (p.getNome().equals(nome)) {
